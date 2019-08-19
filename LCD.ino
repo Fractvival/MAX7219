@@ -24,11 +24,11 @@ int delayTest = 150;
 //
 // Pauza mezi ctenim tlacitka
 //
-int delayButton = 50;
+int delayButton = 80;
 //
 // Pauza fce loop
 //
-int delayLoop = 20;
+int delayLoop = 40;
 
 
 // Hlavni pocitadlo ( materialu, tedy flasek :) )

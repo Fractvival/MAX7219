@@ -403,6 +403,8 @@ void Show( int count )
 
 void loop() 
 {
+
+  // Detekce stisknuti tlacitka pro pocitani
   if ( digitalRead(Button) == HIGH )
   {
     Count++;
@@ -411,6 +413,8 @@ void loop()
     delay(delayButton);
   }
 
+  ///////////////////////
+  /*  ZDE JE POTREBA OPET ODKOMENTOVAT PRO AKTIVACI RESET TLACITKA !  
   if ( digitalRead(resetButton) == HIGH )
   {
     Count = 0;
@@ -418,7 +422,10 @@ void loop()
     Show( Count );
     delay(delayButton);
   }
+  digitalWrite(resetButton,LOW);
+  */
 
   digitalWrite(Button,LOW);
+
   delay(delayLoop);
 }

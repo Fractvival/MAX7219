@@ -405,9 +405,15 @@ void loop()
 {
 
   // Detekce stisknuti tlacitka pro pocitani
+  // Operace s pocitanim
+  // Zobrazeni vysledku na displej
   if ( digitalRead(Button) == HIGH )
   {
     Count++;
+    if ( Count > 9999 )
+    {
+      Count = 0;
+    }
     digitalWrite(Button,LOW);
     Show( Count );
     delay(delayButton);

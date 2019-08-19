@@ -106,7 +106,7 @@ void setup()
 // NUMBER_X je pouzit pro test pixelu
 // Dojde tedy k aktivaci vsech pixelu
 //
-char NUMBER_X[] = 
+byte NUMBER_X[] = 
 {B11111111,
 B11111111,
 B11111111,
@@ -117,7 +117,7 @@ B11111111,
 B11111111};
 
 
-char NUMBER_0[] = 
+byte NUMBER_0[] = 
 {B00111100,
 B00100100,
 B00100100,
@@ -128,7 +128,7 @@ B00100100,
 B00111100};
 
 
-char NUMBER_1[] = 
+byte NUMBER_1[] = 
 {B00000100,
 B00000100,
 B00000100,
@@ -139,7 +139,7 @@ B00000100,
 B00000100};
 
 
-char NUMBER_2[] = 
+byte NUMBER_2[] = 
 {B00111100,
 B00000100,
 B00000100,
@@ -149,7 +149,7 @@ B00100000,
 B00100000,
 B00111100};
 
-char NUMBER_3[] = 
+byte NUMBER_3[] = 
 {B00111100,
 B00000100,
 B00000100,
@@ -159,7 +159,7 @@ B00000100,
 B00000100,
 B00111100};
 
-char NUMBER_4[] = 
+byte NUMBER_4[] = 
 {B00100100,
 B00100100,
 B00100100,
@@ -169,7 +169,7 @@ B00000100,
 B00000100,
 B00000100};
 
-char NUMBER_5[] = 
+byte NUMBER_5[] = 
 {B00111100,
 B00100000,
 B00100000,
@@ -179,7 +179,7 @@ B00000100,
 B00000100,
 B00111100};
 
-char NUMBER_6[] = 
+byte NUMBER_6[] = 
 {B00111100,
 B00100000,
 B00100000,
@@ -189,7 +189,7 @@ B00100100,
 B00100100,
 B00111100};
 
-char NUMBER_7[] = 
+byte NUMBER_7[] = 
 {B00111100,
 B00000100,
 B00000100,
@@ -199,7 +199,7 @@ B00000100,
 B00000100,
 B00000100};
 
-char NUMBER_8[] = 
+byte NUMBER_8[] = 
 {B00111100,
 B00100100,
 B00100100,
@@ -209,7 +209,7 @@ B00100100,
 B00100100,
 B00111100};
 
-char NUMBER_9[] = 
+byte NUMBER_9[] = 
 {B00111100,
 B00100100,
 B00100100,
@@ -225,7 +225,7 @@ B00000100};
 // Primo zobrazi, radek po radku, zvolene cislo
 // z predchozich definic cisel..
 //
-void SetDigit( int addr, char * digit )
+void SetDigit( int addr, byte * digit )
 {
   // plati pro segment 8x8 pixelu
   for ( int i = 0; i < 8; i++ )

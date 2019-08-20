@@ -24,11 +24,11 @@ int delayTest = 150;
 //
 // Pauza mezi ctenim tlacitka
 //
-int delayButton = 80;
+int delayButton = 20;
 //
 // Pauza fce loop
 //
-int delayLoop = 40;
+int delayLoop = 20;
 
 
 // Hlavni pocitadlo ( materialu, tedy flasek :) )
@@ -53,7 +53,7 @@ int resetButton = 3;
 // Zarovnani vypisu
 // 0=leva, 1=prava    strana
 //
-int Align = 0;
+int Align = 1;
 
 
 ///////////////////////////
@@ -86,16 +86,10 @@ void setup()
 
   pinMode(Button,INPUT_PULLUP);
   digitalWrite(Button,LOW);
-  
-  ///// PRO AKTIVACI RESET TLACITKA NUTNO TUTO CAST ODKOMENTOVAT ! 
-  /*
   pinMode(resetButton,INPUT_PULLUP);
   digitalWrite(resetButton,LOW);
-  */
-
   
   Show( 0 );
-  
 }
 
 ////////////////////////////////
@@ -414,23 +408,28 @@ void loop()
     {
       Count = 0;
     }
-    digitalWrite(Button,LOW);
     Show( Count );
+    while ( digitalRead(Button) == HIGH )
+    {
+      // Cekam na uvolneni..
+    }
+    digitalWrite(Button,LOW);
     delay(delayButton);
   }
 
-  ///////////////////////
-  /*  ZDE JE POTREBA OPET ODKOMENTOVAT PRO AKTIVACI RESET TLACITKA !  
   if ( digitalRead(resetButton) == HIGH )
   {
     Count = 0;
     digitalWrite(resetButton,LOW);
     Show( Count );
+    while ( digitalRead(resetButton) == HIGH )
+    {
+      // Cekam na uvolneni..
+    }
     delay(delayButton);
   }
-  digitalWrite(resetButton,LOW);
-  */
 
+  digitalWrite(resetButton,LOW);
   digitalWrite(Button,LOW);
 
   delay(delayLoop);

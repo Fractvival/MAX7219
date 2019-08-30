@@ -1,4 +1,4 @@
-// VERZE 19.8.2019
+// VERZE 30.8.2019
 // 
 // sestrojeno pro segmenty 8x8 pixelu !
 //
@@ -20,11 +20,7 @@ LedControl lc = LedControl(12,11,10,4);
 
 // Pauza mezi testem segmentu
 //
-int delayTest = 150;
-//
-// Pauza mezi ctenim tlacitka
-//
-int delayButton = 20;
+int delayTest = 100;
 //
 // Pauza fce loop
 //
@@ -41,14 +37,9 @@ int Light = 8;
 
 
 // Pocitaci "tlacitko"
-// Klasicke zapojeni tlacitka s 10k odporem na digital pin 
+// Klasicke zapojeni analogovaho tlacitka bez odporu, napr.>:   A0<->5V
 //
-int Button = 4;
-//
-// RESET tlacitko
-//
-int resetButton = 3;
-
+int Button = A0;
 
 // Zarovnani vypisu
 // 0=leva, 1=prava    strana
@@ -61,7 +52,7 @@ int Align = 1;
 //
 void setup() 
 {
-  delay(300);
+  delay(50);
   Serial.begin(9600);
   // Do promenne "devices" zjistim pocet segmentu (nastaveno vyse)
   //
@@ -84,11 +75,13 @@ void setup()
     lc.clearDisplay(address);
   }
 
+  // Nastaveni pinu tlacitka (defaultne A0) na PULLUP, tedy vnitrni odpor
   pinMode(Button,INPUT_PULLUP);
-  digitalWrite(Button,LOW);
-  pinMode(resetButton,INPUT_PULLUP);
-  digitalWrite(resetButton,LOW);
-  
+  // Nastavim nulovou hodnotu na tento pin
+  // Po stisku tlacitka se do tohoto pinu dostane 5V coz vyvola efekt zmacknuti ktery detekujeme v kodu dole (ve smycce)
+  analogWrite(Button,LOW);
+
+  // Na pocatku zobraz nulu
   Show( 0 );
 }
 
@@ -100,7 +93,7 @@ void setup()
 // NUMBER_X je pouzit pro test pixelu
 // Dojde tedy k aktivaci vsech pixelu
 //
-byte NUMBER_X[] = 
+byte NUMBER_X[8] = 
 {B11111111,
 B11111111,
 B11111111,
@@ -111,7 +104,7 @@ B11111111,
 B11111111};
 
 
-byte NUMBER_0[] = 
+byte NUMBER_0[8] = 
 {B00111100,
 B00100100,
 B00100100,
@@ -122,7 +115,7 @@ B00100100,
 B00111100};
 
 
-byte NUMBER_1[] = 
+byte NUMBER_1[8] = 
 {B00000100,
 B00000100,
 B00000100,
@@ -133,7 +126,7 @@ B00000100,
 B00000100};
 
 
-byte NUMBER_2[] = 
+byte NUMBER_2[8] = 
 {B00111100,
 B00000100,
 B00000100,
@@ -143,7 +136,7 @@ B00100000,
 B00100000,
 B00111100};
 
-byte NUMBER_3[] = 
+byte NUMBER_3[8] = 
 {B00111100,
 B00000100,
 B00000100,
@@ -153,7 +146,7 @@ B00000100,
 B00000100,
 B00111100};
 
-byte NUMBER_4[] = 
+byte NUMBER_4[8] = 
 {B00100100,
 B00100100,
 B00100100,
@@ -163,7 +156,7 @@ B00000100,
 B00000100,
 B00000100};
 
-byte NUMBER_5[] = 
+byte NUMBER_5[8] = 
 {B00111100,
 B00100000,
 B00100000,
@@ -173,7 +166,7 @@ B00000100,
 B00000100,
 B00111100};
 
-byte NUMBER_6[] = 
+byte NUMBER_6[8] = 
 {B00111100,
 B00100000,
 B00100000,
@@ -183,7 +176,7 @@ B00100100,
 B00100100,
 B00111100};
 
-byte NUMBER_7[] = 
+byte NUMBER_7[8] = 
 {B00111100,
 B00000100,
 B00000100,
@@ -193,7 +186,7 @@ B00000100,
 B00000100,
 B00000100};
 
-byte NUMBER_8[] = 
+byte NUMBER_8[8] = 
 {B00111100,
 B00100100,
 B00100100,
@@ -203,7 +196,7 @@ B00100100,
 B00100100,
 B00111100};
 
-byte NUMBER_9[] = 
+byte NUMBER_9[8] = 
 {B00111100,
 B00100100,
 B00100100,
@@ -297,6 +290,19 @@ void ShowNumber(int addr, int number)
 }
 
 
+/////////////////////////////////////////
+// RESET CELEHO DISPLEJE (vsech segmentu)
+// Tradicne pouzito pri prekroceni hodnot displeje
+//
+void displayReset()
+{
+  int devices = lc.getDeviceCount();
+  for ( int i = 0; i < devices; i++ )
+  {
+    lc.clearDisplay(i);
+  }
+}
+
 
 ///////////////////////////////
 // ZOBRAZUJE CISLA NA DISPLEJI
@@ -304,11 +310,6 @@ void ShowNumber(int addr, int number)
 void Show( int count )
 {
   int devices = lc.getDeviceCount();
-
-  for ( int i = 0; i < devices; i++ )
-  {
-    lc.clearDisplay(i);
-  }
 
   if ( Align == 0 )
   {
@@ -393,44 +394,32 @@ void Show( int count )
 }
 
 
-
-
 void loop() 
 {
+  //Nactu hodnotu z pinu tlacitka
+  int read0 = analogRead(Button);
 
-  // Detekce stisknuti tlacitka pro pocitani
-  // Operace s pocitanim
-  // Zobrazeni vysledku na displej
-  if ( digitalRead(Button) == HIGH )
+  // Pokud je vic jak 1000, doslo ke stlaceni (5V na pinu)
+  if ( read0 > 1000 )
   {
+    // Pri prekroceni hodnot displeje zresetujeme pocitadlo a smazeme displej
     Count++;
     if ( Count > 9999 )
     {
+      displayReset();
       Count = 0;
     }
-    Show( Count );
-    while ( digitalRead(Button) == HIGH )
+    // A zde dojde k vyobrazeni nove hodnoty na displeji
+    Show( Count );    
+    // Cekacio smycka pro pusteni tlacitka
+    while( analogRead(Button) > 500 )
     {
-      // Cekam na uvolneni..
+      // cekam na pusteni tlacitka
     }
-    digitalWrite(Button,LOW);
-    delay(delayButton);
   }
-
-  if ( digitalRead(resetButton) == HIGH )
-  {
-    Count = 0;
-    digitalWrite(resetButton,LOW);
-    Show( Count );
-    while ( digitalRead(resetButton) == HIGH )
-    {
-      // Cekam na uvolneni..
-    }
-    delay(delayButton);
-  }
-
-  digitalWrite(resetButton,LOW);
-  digitalWrite(Button,LOW);
-
+  // Cekani pro dalsi otocku
   delay(delayLoop);
 }
+
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
